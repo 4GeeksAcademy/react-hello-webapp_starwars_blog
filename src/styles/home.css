@@ -1,0 +1,19 @@
+
+.carousel-multiple {
+    overflow-x: auto;
+    white-space: nowrap;
+    scroll-snap-type: x mandatory;
+  }
+  
+  .carousel-card {
+    display: inline-block;
+    scroll-snap-align: start;
+    flex-shrink: 0;
+    width: 90%;
+    transition: transform .2s ease-in-out;
+  }
+  
+  .carousel-multiple::-webkit-scrollbar {
+    width: 0!important;
+  }
+  
