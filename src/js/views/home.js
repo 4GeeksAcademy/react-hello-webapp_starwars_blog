@@ -10,12 +10,21 @@ export const Home = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [favorites, setFavorites] = useState([]);
+  const [favoritePlanets, setFavoritePlanets] = useState([]);
 
   const toggleFavorite = (url) => {
     if (favorites.includes(url)) {
       setFavorites(favorites.filter(fav => fav !== url));
     } else {
       setFavorites([...favorites, url]);
+    }
+  };
+
+  const toggleFavoritePlanet = (url) => {
+    if (favoritePlanets.includes(url)) {
+      setFavoritePlanets(favoritePlanets.filter(fav => fav !== url));
+    } else {
+      setFavoritePlanets([...favoritePlanets, url]);
     }
   };
 
@@ -106,17 +115,35 @@ export const Home = () => {
 
       <h2>Planets</h2>
       <div className="d-flex flex-row flex-nowrap overflow-auto">
-        {planets.map(planet => (
-          <div key={planet.properties.url} className="card m-2" style={{ width: '18rem', flex: '0 0 auto' }}>
-            <img src="https://via.placeholder.com/150" className="card-img-top" alt={planet.properties.name} />
-            <div className="card-body">
-              <h5 className="card-title">{planet.properties.name || "N/A"}</h5>
-              <p className="card-text">Population: {planet.properties.population || "N/A"}</p>
-              <p className="card-text">Terrain: {planet.properties.terrain || "N/A"}</p>
-              <Link to={`/planet/${planet.uid}`} className="btn btn-success mt-3">Learn more!</Link>
+        {planets.map(planet => {
+          const isFavorite = favoritePlanets.includes(planet.properties.url);
+          return (
+            <div key={planet.properties.url} className="card m-2" style={{ width: '18rem', flex: '0 0 auto' }}>
+              <img src="https://via.placeholder.com/150" className="card-img-top" alt={planet.properties.name} />
+              <div className="card-body">
+                <h5 className="card-title">{planet.properties.name || "N/A"}</h5>
+                <p className="card-text">Population: {planet.properties.population || "N/A"}</p>
+                <p className="card-text">Terrain: {planet.properties.terrain || "N/A"}</p>
+                <div className="d-flex justify-content-between align-items-center">
+                  <Link to={`/planet/${planet.uid}`} className="btn btn-success mt-3">Learn more!</Link>
+                  <button
+                    className={`btn btn-outline-primary ${isFavorite ? "text-danger" : ""}`}
+                    onClick={() => toggleFavoritePlanet(planet.properties.url)}
+                  >
+                    {isFavorite ? (
+                      <>
+                        <FontAwesomeIcon icon={faTrash} />
+                        {" Remove"}
+                      </>
+                    ) : (
+                      <FontAwesomeIcon icon={faHeart} />
+                    )}
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

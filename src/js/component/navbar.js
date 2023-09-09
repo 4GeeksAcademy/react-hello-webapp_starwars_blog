@@ -20,7 +20,7 @@ export const Navbar = ({ favoritesCount, favorites, removeFavorite, selectedChar
           </div>
         )}
         <Link to="/demo">
-          <button className="btn btn-primary">
+          <button className="btn btn-primary" disabled>
             Favorites <span className="badge badge-light">{favoritesCount}</span>
           </button>
         </Link>
