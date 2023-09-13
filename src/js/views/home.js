@@ -11,25 +11,40 @@ export const Home = () => {
   const [error, setError] = useState(null);
   const [favorites, setFavorites] = useState([]);
   const [favoritePlanets, setFavoritePlanets] = useState([]);
+  const [selectedCharacter, setSelectedCharacter] = useState(null);
+  const [selectedPlanet, setSelectedPlanet] = useState(null);
 
-  const toggleFavorite = (url) => {
-    if (favorites.includes(url)) {
+  // Dentro del componente Home
+  const toggleFavorite = (url, isCharacter) => {
+    if (isCharacter) {
+      const character = people.find(person => person.properties.url === url);
+      setSelectedCharacter(character || null);
+
+      if (favorites.includes(url)) {
+        setFavorites(favorites.filter(fav => fav !== url));
+      } else {
+        setFavorites([...favorites, url]);
+      }
+    } else {
+      const planet = planets.find(planet => planet.properties.url === url);
+      setSelectedPlanet(planet || null);
+
+      if (favoritePlanets.includes(url)) {
+        setFavoritePlanets(favoritePlanets.filter(fav => fav !== url));
+      } else {
+        setFavoritePlanets([...favoritePlanets, url]);
+      }
+    }
+  };
+
+  const removeFavorite = (url, isCharacter) => {
+    if (isCharacter) {
+      setSelectedCharacter(null);
       setFavorites(favorites.filter(fav => fav !== url));
     } else {
-      setFavorites([...favorites, url]);
-    }
-  };
-
-  const toggleFavoritePlanet = (url) => {
-    if (favoritePlanets.includes(url)) {
+      setSelectedPlanet(null);
       setFavoritePlanets(favoritePlanets.filter(fav => fav !== url));
-    } else {
-      setFavoritePlanets([...favoritePlanets, url]);
     }
-  };
-
-  const removeFavorite = (url) => {
-    setFavorites(favorites.filter(fav => fav !== url));
   };
 
   useEffect(() => {
@@ -69,21 +84,26 @@ export const Home = () => {
 
   }, []);
 
+  const totalFavorites = favorites.length + favoritePlanets.length;
+
   return (
     <div className="text-center mt-5">
       {loading && <p>Loading...</p>}
       {error && <p>{error}</p>}
 
       <Navbar
-        favoritesCount={favorites.length}
+        favoritesCount={totalFavorites}
         favorites={favorites}
+        favoritePlanets={favoritePlanets}
         removeFavorite={removeFavorite}
+        selectedCharacter={selectedCharacter}
+        selectedPlanet={selectedPlanet}
       />
 
       <h2>Characters</h2>
       <div className="d-flex flex-row flex-nowrap overflow-auto">
         {people.map(person => {
-          const isFavorite = favorites.includes(person.properties.url);
+          const isCharacterFavorite = favorites.includes(person.properties.url);
           return (
             <div key={person.properties.url} className="card m-2" style={{ width: '18rem', flex: '0 0 auto' }}>
               <img src="https://via.placeholder.com/150" className="card-img-top" alt={person.properties.name} />
@@ -94,10 +114,10 @@ export const Home = () => {
                 <div className="d-flex justify-content-between align-items-center">
                   <Link to={`/people/${person.uid}`} className="btn btn-success ml-2">Learn more!</Link>
                   <button
-                    className={`btn btn-outline-primary ${isFavorite ? "text-danger" : ""}`}
-                    onClick={() => toggleFavorite(person.properties.url)}
+                    className={`btn btn-outline-primary ${isCharacterFavorite ? "text-danger" : ""}`}
+                    onClick={() => toggleFavorite(person.properties.url, true)}
                   >
-                    {isFavorite ? (
+                    {isCharacterFavorite ? (
                       <>
                         <FontAwesomeIcon icon={faTrash} />
                         {" Remove"}
@@ -116,7 +136,7 @@ export const Home = () => {
       <h2>Planets</h2>
       <div className="d-flex flex-row flex-nowrap overflow-auto">
         {planets.map(planet => {
-          const isFavorite = favoritePlanets.includes(planet.properties.url);
+          const isPlanetFavorite = favoritePlanets.includes(planet.properties.url);
           return (
             <div key={planet.properties.url} className="card m-2" style={{ width: '18rem', flex: '0 0 auto' }}>
               <img src="https://via.placeholder.com/150" className="card-img-top" alt={planet.properties.name} />
@@ -127,10 +147,10 @@ export const Home = () => {
                 <div className="d-flex justify-content-between align-items-center">
                   <Link to={`/planet/${planet.uid}`} className="btn btn-success mt-3">Learn more!</Link>
                   <button
-                    className={`btn btn-outline-primary ${isFavorite ? "text-danger" : ""}`}
-                    onClick={() => toggleFavoritePlanet(planet.properties.url)}
+                    className={`btn btn-outline-primary ${isPlanetFavorite ? "text-danger" : ""}`}
+                    onClick={() => toggleFavorite(planet.properties.url, false)}
                   >
-                    {isFavorite ? (
+                    {isPlanetFavorite ? (
                       <>
                         <FontAwesomeIcon icon={faTrash} />
                         {" Remove"}
