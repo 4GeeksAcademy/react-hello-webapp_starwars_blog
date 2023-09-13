@@ -14,6 +14,7 @@ export const Home = () => {
   const [selectedCharacter, setSelectedCharacter] = useState(null);
   const [selectedPlanet, setSelectedPlanet] = useState(null);
 
+
   // Dentro del componente Home
   const toggleFavorite = (url, isCharacter) => {
     if (isCharacter) {
@@ -23,7 +24,7 @@ export const Home = () => {
       if (favorites.includes(url)) {
         setFavorites(favorites.filter(fav => fav !== url));
       } else {
-        setFavorites([...favorites, url]);
+        setFavorites([...favorites, { type: "character", data: character }]);
       }
     } else {
       const planet = planets.find(planet => planet.properties.url === url);
@@ -32,7 +33,7 @@ export const Home = () => {
       if (favoritePlanets.includes(url)) {
         setFavoritePlanets(favoritePlanets.filter(fav => fav !== url));
       } else {
-        setFavoritePlanets([...favoritePlanets, url]);
+        setFavoritePlanets([...favoritePlanets, { type: "planet", data: planet }]);
       }
     }
   };
@@ -40,12 +41,16 @@ export const Home = () => {
   const removeFavorite = (url, isCharacter) => {
     if (isCharacter) {
       setSelectedCharacter(null);
-      setFavorites(favorites.filter(fav => fav !== url));
+      setFavorites(favorites.filter(fav => fav.data.properties.url !== url));
     } else {
       setSelectedPlanet(null);
-      setFavoritePlanets(favoritePlanets.filter(fav => fav !== url));
+      setFavoritePlanets(favoritePlanets.filter(fav => fav.data.properties.url !== url));
     }
   };
+
+  const allFavorites = favorites.concat(favoritePlanets);
+
+
 
   useEffect(() => {
     const fetchPeople = fetch("https://www.swapi.tech/api/people/")
@@ -92,9 +97,7 @@ export const Home = () => {
       {error && <p>{error}</p>}
 
       <Navbar
-        favoritesCount={totalFavorites}
-        favorites={favorites}
-        favoritePlanets={favoritePlanets}
+        favorites={allFavorites}
         removeFavorite={removeFavorite}
         selectedCharacter={selectedCharacter}
         selectedPlanet={selectedPlanet}
@@ -103,7 +106,7 @@ export const Home = () => {
       <h2>Characters</h2>
       <div className="d-flex flex-row flex-nowrap overflow-auto">
         {people.map(person => {
-          const isCharacterFavorite = favorites.includes(person.properties.url);
+          const isCharacterFavorite = favorites.some(fav => fav.url === person.properties.url);
           return (
             <div key={person.properties.url} className="card m-2" style={{ width: '18rem', flex: '0 0 auto' }}>
               <img src="https://via.placeholder.com/150" className="card-img-top" alt={person.properties.name} />

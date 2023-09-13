@@ -1,37 +1,67 @@
 import React from "react";
 import starwars from "../../img/starwars.png";
-import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import Dropdown from "react-bootstrap/Dropdown";
+import "bootstrap/dist/css/bootstrap.min.css";
 
-export const Navbar = ({ favoritesCount, favorites, removeFavorite, selectedCharacter, selectedPlanet }) => {
+export const Navbar = ({
+  favorites,
+  removeFavorite,
+  selectedCharacter,
+  selectedPlanet,
+}) => {
   return (
     <nav className="navbar navbar-light bg-light mb-3">
-      <Link to="/">
-        <img src={starwars} alt="Star Wars Logo" className="navbar-brand mb-0" width="100px" />
-      </Link>
-      <div className="ml-auto">
-        {selectedCharacter && (
-          <div className="d-flex align-items-center">
-            <span>{selectedCharacter.properties.name || "N/A"}</span>
-            <button className="btn btn-outline-danger ml-2" onClick={() => removeFavorite(selectedCharacter.url, true)}>
-              <FontAwesomeIcon icon={faTrash} />
-            </button>
-          </div>
-        )}
-        {selectedPlanet && (
-          <div className="d-flex align-items-center">
-            <span>{selectedPlanet.properties.name || "N/A"}</span>
-            <button className="btn btn-outline-danger ml-2" onClick={() => removeFavorite(selectedPlanet.url, false)}>
-              <FontAwesomeIcon icon={faTrash} />
-            </button>
-          </div>
-        )}
-        <Link to="/demo">
-          <button className="btn btn-primary" disabled>
-            Favorites <span className="badge badge-light">{favoritesCount}</span>
-          </button>
-        </Link>
+      <div className="container">
+        <a href="/">
+          <img
+            src={starwars}
+            alt="Star Wars Logo"
+            className="navbar-brand mb-0"
+            width="100px"
+          />
+        </a>
+        <Dropdown>
+          <Dropdown.Toggle
+            variant="primary"
+            id="dropdown-favorites"
+            className="mr-3"
+          >
+            Favorites <span className="badge badge-light">{favorites.length}</span>
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            {favorites.map((favorite, index) => (
+              <Dropdown.Item key={index}>
+                {favorite.type === "character" ? (
+                  <>
+                    {favorite.data.properties.name}
+                    <button
+                      className="btn btn-outline-danger ml-2"
+                      onClick={() =>
+                        removeFavorite(favorite.data.properties.url, true)
+                      }
+                    >
+                      <FontAwesomeIcon icon={faTrash} />
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    {favorite.data.properties.name}
+                    <button
+                      className="btn btn-outline-danger ml-2"
+                      onClick={() =>
+                        removeFavorite(favorite.data.properties.url, false)
+                      }
+                    >
+                      <FontAwesomeIcon icon={faTrash} />
+                    </button>
+                  </>
+                )}
+              </Dropdown.Item>
+            ))}
+          </Dropdown.Menu>
+        </Dropdown>
       </div>
     </nav>
   );
